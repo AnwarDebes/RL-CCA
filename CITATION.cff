@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the relevant subproject paper(s)."
+title: "NEXUS Research Subprojects: CD-MCTS, CMAZ, Wreath-Equivariant Networks"
+authors:
+  - family-names: "(see paper)"
+    given-names: ""
+version: "0.1.0"
+date-released: "2026-05-03"
+abstract: >-
+  Three research subprojects on N-player non-zero-sum board game RL,
+  built alongside the v4 NEXUS RL agent for Chinese Checkers tournaments.
+
+  (1) Coalition-Distributional MCTS (flagship): the first AlphaZero
+  variant for N-player non-zero-sum perfect-information games combining
+  Plackett-Luce rank-distribution value heads, state-conditional
+  coalition-belief posteriors, and EXP-IX no-regret action selectors,
+  with a CCE convergence theorem (Lemma 3 conjectural).
+
+  (2) CMAZ - Component-Mixed AlphaZero (workshop): state-conditional
+  QMIX-style monotonic mixer over per-objective values, with
+  inference-time utility re-weighting.
+
+  (3) Wreath-equivariant network (workshop): C6 ⋊ S_N wreath product
+  equivariance for star-hex Chinese Checkers, with bit-identical seat
+  permutation invariance and ASEN-style active-subgroup gating.
+
+repository-code: ""
+license: ""
+keywords:
+  - reinforcement-learning
+  - monte-carlo-tree-search
+  - alphazero
+  - n-player-games
+  - chinese-checkers
+  - coarse-correlated-equilibrium
+  - equivariant-neural-networks
+  - wreath-product
+references:
+  - type: article
+    title: "Coalition-Distributional MCTS for N-player non-zero-sum self-play (paper)"
+    authors:
+      - family-names: "(TBD)"
+    year: 2026

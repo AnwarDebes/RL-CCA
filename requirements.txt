@@ -1,0 +1,9 @@
+torch>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+tensorboard>=2.12.0
+pytest>=7.0.0
+
+# For DiscoRL experiment (optional - agent works without it)
+# pip install git+https://github.com/asystemoffields/disco-torch.git
+# Fallback: pip install git+https://github.com/google-deepmind/disco_rl.git
