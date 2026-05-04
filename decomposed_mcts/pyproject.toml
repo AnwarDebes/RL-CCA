@@ -1,0 +1,17 @@
+[project]
+name = "decomposed-mcts"
+version = "0.1.0"
+description = "CMAZ - Component-Mixed AlphaZero with state-conditional monotonic mixer"
+requires-python = ">=3.10"
+authors = []
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
