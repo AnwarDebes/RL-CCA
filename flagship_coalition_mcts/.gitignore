@@ -1,0 +1,22 @@
+# Generated files — don't commit
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.pytest_cache/
+*.log
+
+# Training outputs — too large for git, archive separately
+checkpoints/
+*.pt
+results/
+logs/
+
+# Auto-generated docs (regenerable via `python -m model_summary`)
+docs/architecture.tex
+docs/architecture_summary.md
+
+# Editor artefacts
+.vscode/
+.idea/
+*.swp

@@ -1,0 +1,19 @@
+[project]
+name = "flagship-coalition-mcts"
+version = "0.1.0"
+description = "Coalition-Distributional MCTS for N-player non-zero-sum self-play"
+requires-python = ">=3.10"
+authors = []
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.pytest.ini_options]
+# Tests are at tests/ (per-subproject; sibling dirs also have tests/
+# but using `rootdir` per-pytest-invocation handles that).
+testpaths = ["tests"]
