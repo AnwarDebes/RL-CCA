@@ -2,7 +2,7 @@
 """CD-MCTS tournament client - connects to teacher's game server.
 
 Same protocol as play_server.py but uses NexusTournamentPlayerCDMCTS
-(the flagship CD-MCTS player) instead of the v2 player. Run after
+(the CD-MCTS player) instead of the v2 player. Run after
 training a CD-MCTS network on Chinese Checkers.
 
 Usage:
