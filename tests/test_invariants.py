@@ -256,9 +256,9 @@ def test_inv4_full_n6_game():
 
 @pytest.mark.parametrize("N", [2, 3, 4, 5, 6])
 def test_state_tensor_shape(N):
-    """get_state_tensor must return (22, 17, 17) regardless of N."""
+    """get_state_tensor must return (NUM_CHANNELS, 17, 17) regardless of N."""
     board = HexBoard()
     env = GameEnv(board, num_players=N)
     env.reset()
     t = env.get_state_tensor()
-    assert t.shape == (22, 17, 17), f"N={N}: got shape {t.shape}"
+    assert t.shape == (Config.NUM_CHANNELS, 17, 17), f"N={N}: got shape {t.shape}"

@@ -39,7 +39,7 @@ def test_d3_1_forward_pass():
     device = _device()
     net = NexusNet().to(device)
     net.eval()
-    state = torch.zeros(2, 22, 17, 17, device=device)
+    state = torch.zeros(2, Config.NUM_CHANNELS, 17, 17, device=device)
     mask = torch.ones(2, 1210, dtype=torch.bool, device=device)
     with torch.no_grad():
         out = net(state, mask)
