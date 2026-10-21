@@ -1,14 +1,13 @@
 """Wreath-equivariant CC self-play runner.
 
 Runs WreathCCNetwork as a policy/value network in vanilla AlphaZero-style
-PUCT MCTS. The wreath subproject is workshop-tier - it does NOT use the
-flagship's PL/coalition pillars. The contribution here is the
-*architecture*, demonstrated by:
+PUCT MCTS. It does not use the Plackett-Luce or coalition heads of
+CD-MCTS; the contribution here is the *architecture*, evaluated by:
 
   1. Sample-efficiency: trains faster (matched-data) than non-equivariant
      baselines.
   2. Generalisation: train on N=2,3, evaluate zero-shot on N=4,6.
-  3. Bit-identical seat-permutation invariance (the headline reviewer
+  3. Bit-identical seat-permutation invariance (the main correctness
      check).
 
 This file mirrors the structure of `flagship_coalition_mcts/src/cc_runner.py`
@@ -51,8 +50,8 @@ class WreathCCEvaluator:
 
     Per-player value: the network's scalar value head returns a single
     number for the *current player*; we distribute the negative across
-    others (zero-sum-like) following the same convention as the
-    flagship's ScalarEvaluator.
+    others (zero-sum-like) following the same convention as
+    ScalarEvaluator in CD-MCTS.
     """
 
     def __init__(self, network: WreathCCNetwork) -> None:

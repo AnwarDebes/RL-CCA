@@ -1,6 +1,6 @@
 """Wreath-equivariant encoder for the real Chinese Checkers board.
 
-Bridges the workshop equivariant subproject to the user's tournament
+Connects the equivariant network to the tournament version of the
 game. Uses the actual axial coordinates of the 121 hex cells from
 `core.board.HexBoard` to build a real (not toy) C6-equivariant
 permutation table, then applies the C6-equivariant linear layers on

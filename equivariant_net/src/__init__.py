@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 __title__ = "Wreath-equivariant network for star-hex Chinese Checkers"
-__author__ = "(see paper)"
+__author__ = "Anwar Debes"
 
 from .seat_equivariant import (
     SeatEquivariantBlock, SeatInvariantPool, WreathSeatNet, make_seat_mask,

@@ -12,10 +12,9 @@ dependencies.
 Why manual instead of escnn
 ---------------------------
 escnn is the right tool for production but adds a heavy dependency
-(~1GB total with numpy/scipy/torch). For the workshop-tier
-demonstration we only need to show the *equivariance property holds
-bit-identically* under rotation - that's a 100-line manual
-implementation, fully testable.
+(~1GB total with numpy/scipy/torch). For this prototype we only need
+the *equivariance property to hold bit-identically* under rotation,
+which a 100-line manual implementation provides and fully tests.
 
 How it works
 ------------
