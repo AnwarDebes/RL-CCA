@@ -1,72 +1,66 @@
 # Wreath-Equivariant Networks for Star-Hex Games
 
-Group-equivariant policy/value networks for Chinese Checkers, exploiting the wreath structure of the star-hex board × player roles.
+Policy and value networks for Chinese Checkers that respect the symmetries of the star board and of the players by construction.
 
-## What we claim
+Research prototype inside [NEXUS](../README.md). Pure PyTorch, no escnn dependency, 33 unit tests.
 
-Chinese Checkers' true symmetry group is **not** plain D6 - the 6 home triangles break the hex interior's p6m down to a configuration-dependent subgroup, and player roles are themselves permutable. We model the joint symmetry as the wreath quotient
+## Idea
 
-```
-G_N ≀ S_N    where  G_N ≤ D6 is the subgroup of D6 fixing the
-                    home-triangle-occupancy pattern for N players
-```
+Rotating the star board by 60 degrees maps it onto itself and carries every home triangle to the next one. Relabelling which seat is called "player 1" changes nothing about the game either. A standard CNN has to learn both facts from data. This network has them built in:
 
-with `N ∈ {2, 3, 4, 6}` (N=5 is a non-symmetric Sternhalma configuration). Realised by:
+* **Board rotations (C6).** Hex convolutions in axial coordinates keep six rotation channels per cell. A 60-degree rotation acts as
+  $(q, r) \mapsto (-r,\ q + r)$ on positions and as a cyclic shift on the rotation channels, and kernels are tied across the six rotated copies.
+* **Seat permutations (S_N).** Each player's features are processed by shared weights and combined by permutation-invariant pooling, in the style of Deep Sets. Permuting the seats permutes the outputs in exactly the same way.
+* **Wreath fusion.** A C6 layer runs on every seat's copy of the board with shared weights, spatial features are pooled per seat, mixed across seats by the S_N block, and broadcast back as a seat-conditioned bias. Each step commutes with both group actions, so the whole layer is equivariant to the wreath product C6 ≀ S_N.
 
-1. An **escnn p6m steerable backbone** over hex-grid features.
-2. An **ASEN-style symmetry-breaking input field** (Goel et al. 2026) encoding which home triangles are active and which player is to move - automatically restricts equivariance to the active subgroup `G_N` per game.
-3. **Wreath fusion layers** that combine spatial features with seat-features under joint rotation × seat-permutation.
-4. A **symmetry-breaking output head** so the policy commits to a single move while the trunk stays equivariant.
+Both properties are tested to hold to floating-point precision, not approximately.
 
-## Why this is novel (verified by lit search 2024-2026)
+## Implementation
 
-| Closest prior art | Distinction |
-|---|---|
-| **HexaConv (Hoogeboom 2018)** - p6/p6m on hex lattices | Demoed on CIFAR + aerial imagery, **not games, not stars, no role-permutation factor**. |
-| **Adhikari & Gu 2024 (arxiv 2405.18733)** - Chinese Checkers with parameter sharing | Standard CNN/MLP, **no group equivariance**. Strongest practical baseline. |
-| **FGNN (Carroll 2020)** - D2-equivariant draughts | Square board, **D2 only**. |
-| **ASEN (Goel 2026, arxiv 2603.19486)** - subgroup equivariance via symmetry-breaking | Validated on graphs/images/sequences, **never on games or star-hex**. |
-| **Multi-Agent MDP Homomorphic Nets / PEnGUiN / CPE** | Handle **either** S_N **or** spatial group, never the wreath product. |
-| **Wang & Maron - Equivariant Maps for Hierarchical Structures** | Wreath-product theory exists, **not applied to RL games**. |
+| File | Contents |
+| --- | --- |
+| `src/c6_spatial.py` | `C6EquivariantLinear`, axial rotation and rotation permutation tables |
+| `src/seat_equivariant.py` | `SeatEquivariantBlock`, `SeatInvariantPool`, `WreathSeatNet`, seat masks for variable N |
+| `src/wreath_fuse.py` | `WreathFuseLayer` combining the spatial and seat streams |
+| `src/cc_wreath_encoder.py` | `CCWreathEncoder` on the real 121-cell board from `core/board.py` |
+| `src/wreath_network.py` | `WreathCCNetwork` with policy and value heads (188,987 parameters in the default configuration) |
+| `src/cc_runner.py` | Evaluator for PUCT MCTS and a self-play game runner |
+| `experiments/wreath_cc_training.py` | AlphaZero-style self-play training on Chinese Checkers |
 
-**Novelty slice:** the wreath quotient `G_N ≀ S_N` realised as an escnn p6m backbone × ASEN gating, instantiated for the star-hex Chinese Checkers board with automatic per-N subgroup selection - no retraining, no test-time augmentation. None of the existing pieces are stitched together this way in the published record.
+## Running
 
-## Killer experiment
+From the repository root:
 
-**Zero-shot N-generalization at fixed parameters.** Train AlphaZero-style on N=2 and N=3 only; evaluate against a fixed strong opponent at N=4 and N=6 with **zero retraining and zero data augmentation**. Baselines:
-
-- (a) Adhikari-style parameter-sharing CNN
-- (b) Same CNN + 12× rotation/reflection augmentation
-- (c) HexaConv p6m **without** the wreath/ASEN gating (so it cannot specialize per-N)
-
-**Sanity check:** drop-in role permutation at test time (swap which physical triangle is "player 1") must yield **bit-identical** policy logits for our model and *not* identical for any baseline. This is a hard test that the wreath equivariance is realised, not just approximated.
-
-## Layout
-
-```
-equivariant_net/
-  src/
-    backbone.py      # escnn p6m steerable trunk
-    asen_gate.py     # active-subgroup field generator
-    wreath_fuse.py   # spatial × seat-feature fusion under wreath action
-    head.py          # symmetry-breaking policy + scalar value
-    embed.py         # hex-grid embedding + seat-feature stream
-  experiments/
-    zero_shot_N.py   # killer experiment
-    sample_efficiency.py
-    permutation_sanity.py  # bit-identical logits under seat permutation
-  tests/
-    test_p6m_equivariance.py
-    test_role_permutation_invariance.py
-    test_wreath_fuse_commute.py
+```bash
+python -m pytest equivariant_net/tests -q    # 33 tests
+python -m equivariant_net test
 ```
 
-## Compute discipline
+## What the tests check
 
-CPU only. The escnn ops are CPU-runnable for verification and small-scale experiments. Any large-scale training waits for Phase 2 v4 completion.
+* Six 60-degree rotations return every cell to itself; three rotations negate the axial coordinates.
+* The C6 layer commutes with rotation, including under repeated full rotations.
+* Seat pooling is invariant and the seat block is equivariant under every permutation, including with masks for fewer than six players.
+* The fusion layer commutes with seat permutations, with rotations on the board interior, and with both at once.
+* The encoder's pooled output is unchanged when the real board is rotated, and the network's pooled features are invariant to seat permutations.
 
-## Risks (honest)
+## Status and next steps
 
-- **"Just escnn applied to a new board"** - counter by emphasizing the wreath quotient algebra and the ASEN-tied subgroup selection. The contribution is the *architecture*, not the application alone.
-- **Killer experiment must beat both** Adhikari and rotation-augmented HexaConv-on-rhombus, otherwise the star-specific contribution is invisible.
-- **escnn is heavyweight** - falls back to slower CPU paths without GPU. Live with it for the prototype; revisit after Phase 2.
+Implemented: C6 rotations and S_N seat permutations on the real board, with an evaluator that plugs into MCTS.
+
+Planned:
+
+* Reflections, extending C6 to the full dihedral group D6.
+* Symmetry breaking for player counts whose seating pattern has a smaller symmetry group, in the spirit of any-subgroup equivariant networks.
+* Evaluation: sample efficiency against a non-equivariant network of the same size, and zero-shot transfer from 2 and 3 players to 4 and 6 players without retraining or augmentation.
+
+## Related work
+
+| Work | Relation |
+| --- | --- |
+| Cohen and Welling, *Group Equivariant Convolutional Networks*, ICML 2016 | Group convolutions on square grids. |
+| Hoogeboom et al., *HexaConv*, ICLR 2018 | Group convolutions on hexagonal lattices, evaluated on images rather than games. |
+| Zaheer et al., *Deep Sets*, NeurIPS 2017 | Permutation-invariant and permutation-equivariant set functions used for the seat stream. |
+| Cesa, Lang and Weiler, *A Program to Build E(N)-Equivariant Steerable CNNs* (escnn), ICLR 2022 | General steerable CNN library. Avoided here to keep the dependency small. |
+| Goel et al., *Any-Subgroup Equivariant Networks via Symmetry Breaking*, ICLR 2026 | Basis for the planned per-N subgroup selection. |
+| Gu and Adhikari, *Efficient Learning in Chinese Checkers*, 2024 | Parameter sharing for Chinese Checkers without group equivariance. A natural baseline. |
