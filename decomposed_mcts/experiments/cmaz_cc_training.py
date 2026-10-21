@@ -6,8 +6,8 @@ score-decomposed targets matching the teacher's tournament scoring:
     components = [pin_goal/1000, distance/200, time/100, move/1]
 
 The mixer is trained jointly with the network. After training, the
-mixer can be overridden at inference for utility re-weighting (the
-killer property - same network, different objectives, no retraining).
+mixer can be overridden at inference for utility re-weighting (same
+network, different objectives, no retraining).
 
 Compute: ~2x slower than CD-MCTS training on the same network size,
 because we run more MCTS sims per move (CMAZ doesn't have the EXP-IX

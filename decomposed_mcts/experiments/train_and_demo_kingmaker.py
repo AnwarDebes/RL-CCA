@@ -1,13 +1,13 @@
 """Trains a CMAZ network on kingmaker, then demonstrates the
-inference-time-override killer property with semantically-meaningful
-policy divergence.
+inference-time override with semantically meaningful policy
+divergence.
 
 Total compute: ~5-15 min CPU, depending on parameters. Suitable for
 running once Phase 2 v4 finishes (or any time the GPU is idle).
 
-What this script proves
------------------------
-The CMAZ paper's central claim is that a trained network can be
+What this script shows
+----------------------
+The central claim of CMAZ is that a trained network can be
 re-purposed at inference time for different score-utility weightings.
 This script:
   1. Trains CMAZ on kingmaker self-play (3-component score: won / mid /

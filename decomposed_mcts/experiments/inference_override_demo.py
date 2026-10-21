@@ -1,9 +1,9 @@
-"""CMAZ killer experiment: same network, different mixer overrides → different policies.
+"""CMAZ inference-override experiment: same network, different mixer overrides → different policies.
 
 Demonstrates that the CMAZ network - once trained - can adapt to
 different score-utility weightings *at inference time* without
-retraining. This is the unique CMAZ contribution that distinguishes it
-from KataGo's fixed-weighted multi-component value head.
+retraining. This is what distinguishes CMAZ from KataGo's
+fixed-weighted multi-component value head.
 
 Procedure
 ---------
@@ -21,7 +21,7 @@ A trained network would produce *meaningful* policy differences across
 the overrides; an untrained network produces small differences. Either
 way, this script exercises the override mechanism end-to-end.
 
-For the real paper experiment, the network is fully trained via
+For the full experiment, the network is fully trained via
 self-play before the override sweep.
 """
 
@@ -98,7 +98,7 @@ def main():
 
     print("\nKEY OBSERVATION:")
     print("  Different overrides produce different policies, demonstrating")
-    print("  the CMAZ inference-time-override killer property. With a")
+    print("  the CMAZ inference-time override. With a")
     print("  trained network, the policy differences become semantically")
     print("  meaningful (e.g. 'play fast' policies use fewer time-killing")
     print("  hops; 'pin_goal' policies prioritise reaching goal cells).")
