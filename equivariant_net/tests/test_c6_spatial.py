@@ -2,7 +2,7 @@
 
 The decisive test is **bit-identical equivariance**: applying a C6
 rotation BEFORE the layer must equal applying the layer THEN rotating.
-This is the property a flagship reviewer will explicitly check.
+Everything else in the network depends on this property.
 """
 
 from __future__ import annotations

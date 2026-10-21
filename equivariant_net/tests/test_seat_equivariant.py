@@ -1,8 +1,8 @@
 """Tests for the S_N-equivariant seat layer.
 
-These tests verify the property that a flagship reviewer will explicitly
-look for: under any permutation of input seats, the output must transform
-in the *exact* same way (bit-identical up to numerical precision).
+These tests verify the defining property of the layer: under any
+permutation of input seats, the output must transform in the *exact*
+same way (bit-identical up to numerical precision).
 
 Tests:
 1. SeatInvariantPool: y(perm(X)) == y(X)

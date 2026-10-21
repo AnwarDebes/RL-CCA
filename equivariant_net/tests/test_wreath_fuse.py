@@ -1,6 +1,6 @@
 """Tests for the wreath-equivariant fusion layer.
 
-The headline tests verify that the layer commutes with each factor of the
+The main tests verify that the layer commutes with each factor of the
 wreath product:
 
   * S_N seat permutation:  L(perm(x)) == perm(L(x)) bit-identical.
@@ -8,8 +8,7 @@ wreath product:
     grid (boundary fallback may introduce small artifacts).
   * Composed wreath action: both above simultaneously.
 
-Plus the policy-permutation-invariance sanity check that the paper
-explicitly claims.
+Plus a policy-permutation-invariance sanity check.
 """
 
 from __future__ import annotations

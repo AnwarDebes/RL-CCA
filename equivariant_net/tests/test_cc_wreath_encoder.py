@@ -4,8 +4,7 @@ Verifies:
 1. Forward shape: (B, 32, 17, 17) → (B, hidden_dim).
 2. Rotation permutation table is well-formed.
 3. The encoder's *invariant* output is identical under any C6 rotation
-   of the input (this is the killer property the paper claims for the
-   equivariant trunk).
+   of the input (the defining property of the equivariant trunk).
 """
 
 from __future__ import annotations
