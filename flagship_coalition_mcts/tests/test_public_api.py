@@ -1,4 +1,4 @@
-"""Tests for the public API surface (flagship subproject's __init__.py).
+"""Tests for the public API surface (flagship_coalition_mcts/src/__init__.py).
 
 If any of these imports breaks, downstream users will see broken
 imports. The test suite catches that early.

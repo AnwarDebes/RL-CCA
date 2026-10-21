@@ -1,7 +1,6 @@
 """Unit tests for the Plackett-Luce rank-distribution head.
 
-Tests verify the mathematical properties a flagship paper reviewer would
-demand:
+Tests verify the mathematical properties the head must satisfy:
 
 1.  Probabilities sum to 1 over all permutations.
 2.  Winner marginal coincides with softmax (this is *the* identifying
