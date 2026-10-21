@@ -1,6 +1,6 @@
 """Full ablation ladder: A0→A1→A2→A3 + B(NN-CCE) across multiple games.
 
-This is the experiment that backs the paper's headline claim. Runs the
+This is the main experiment for CD-MCTS. Runs the
 five ablation variants on each of the three testbeds (kingmaker, small
 Halma, Chinese Checkers) at matched compute, then reports Elo / win-rate
 / exploitability per variant per game.
@@ -36,7 +36,7 @@ Compute
 -------
 This script is **expensive**. With small models and short training, the
 full ladder takes ~6-12 hours on CPU. With GPU + the production-size
-nets, ~24-48h. For the paper's headline, we run this once per random
+nets, ~24-48h. For final numbers, run this once per random
 seed and average.
 """
 
@@ -113,7 +113,7 @@ GAMES = {
         game=HalmaSmallGame(),
         initial_fn=HalmaState.initial,
         feature_fn=halma_features,
-        feature_dim=NUM_CELLS_HALMA := 25 * 4 + 3 + 3 + 1,  # 107
+        feature_dim=25 * 4 + 3 + 3 + 1,  # 107
         action_space=HALMA_ACTIONS,
         max_players=3,
     ),
@@ -240,7 +240,7 @@ def main():
         json.dump(results, f, indent=2)
     print(f"\nWrote results to {args.out}")
     print("\nNote: this script demonstrates the ablation pipeline mechanics.")
-    print("For the paper's headline numbers, train each variant separately")
+    print("For final numbers, train each variant separately")
     print("via cc_self_play_training.py + cmaz_cc_training.py, then run this.")
 
 

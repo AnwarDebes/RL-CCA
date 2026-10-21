@@ -1,11 +1,10 @@
 """Full integration demo: all three subprojects working on real Chinese Checkers.
 
-Validates that the three research subprojects (flagship CD-MCTS, CMAZ,
+Validates that the three research subprojects (CD-MCTS, CMAZ,
 wreath equivariant) actually compose with the existing nexus CC
 infrastructure. Each is evaluated on the same starting state and the
 outputs are reported side by side.
 
-This is the artifact that demonstrates the work is real, not pretend.
 Run on CPU; finishes in <2 minutes with default settings.
 """
 
@@ -72,8 +71,8 @@ def main():
           f"pin_goal={comps[0]:.2f} dist={comps[1]:.2f} "
           f"time={comps[2]:.2f} move={comps[3]:.4f}")
 
-    # ----- 1. FLAGSHIP CD-MCTS -----
-    print(f"\n{'─' * 36}\nFLAGSHIP CD-MCTS\n{'─' * 36}")
+    # ----- 1. CD-MCTS -----
+    print(f"\n{'─' * 36}\nCD-MCTS\n{'─' * 36}")
     cd_net, cd_ev = build_cc_evaluator(
         num_players_max=6, channels=16, num_blocks=2, hidden_dim=32,
     )
@@ -87,8 +86,8 @@ def main():
     print(f"  MCTS time: {time.time()-t0:.1f}s")
     print(f"  policy top-3: {short_policy_summary(pi_cd)}")
 
-    # ----- 2. CMAZ workshop -----
-    print(f"\n{'─' * 36}\nCMAZ (workshop) with default mixer\n{'─' * 36}")
+    # ----- 2. CMAZ -----
+    print(f"\n{'─' * 36}\nCMAZ with default mixer\n{'─' * 36}")
     cmaz_net = build_cmaz_cc_network(channels=16, num_blocks=2, hidden_dim=32)
     cmaz_n_params = sum(p.numel() for p in cmaz_net.parameters())
     print(f"  network params: {cmaz_n_params:,}")
@@ -102,7 +101,7 @@ def main():
     print(f"  MCTS time: {time.time()-t0:.1f}s")
     print(f"  policy top-3: {short_policy_summary(pi_cmaz)}")
 
-    # CMAZ killer property - show the override changes the policy
+    # CMAZ inference-time override - show it changes the policy
     print(f"\n  CMAZ inference-time override sweep (same network, different utilities):")
     overrides = {
         "all-on-pin_goal":  np.array([1.0, 0.0, 0.0, 0.0]),
@@ -128,7 +127,7 @@ def main():
         "    NOTE: with an UNTRAINED network, the override mechanism is\n"
         "    wired correctly but per-component values are random, so policy\n"
         "    differences may be subtle. Trained networks produce semantically\n"
-        "    meaningful divergence - see Section 6.4 of the paper outline."
+        "    meaningful divergence."
     )
 
     # ----- 3. WREATH EQUIVARIANT encoder -----

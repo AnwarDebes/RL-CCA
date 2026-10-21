@@ -1,10 +1,9 @@
-"""Empirical CCE-gap measurement: the experiment that backs Theorem 1.
+"""Empirical CCE-gap measurement during CD-MCTS self-play.
 
-When Lemma 3 of the convergence theorem cannot be closed in full
-generality, the paper relies on direct empirical measurement of the
-CCE-gap throughout self-play training. This script does that on the
-kingmaker testbed (small enough for exhaustive best-response
-computation).
+CCE convergence of CD-MCTS is a conjecture, so it is checked by direct
+empirical measurement of the CCE-gap throughout self-play training.
+This script does that on the kingmaker testbed (small enough for
+exhaustive best-response computation).
 
 Procedure
 ---------
@@ -17,8 +16,8 @@ Procedure
 5. Plot the trajectory if matplotlib is available.
 
 Expected behaviour: the CCE-gap should decrease (roughly monotonically)
-as training progresses. This is the empirical evidence backing
-Theorem 1 in the absence of a closed Lemma 3.
+as training progresses. This is the empirical evidence for the
+convergence conjecture.
 """
 
 from __future__ import annotations
@@ -143,7 +142,7 @@ def main():
         print(f"\nFirst-to-last CCE-gap change: {first:.4f} -> {last:.4f} "
               f"(Δ={last-first:+.4f})")
         if last < first - 0.05:
-            print("EMPIRICAL THEOREM-1 SUPPORT: CCE-gap decreased monotonically as expected.")
+            print("CCE-gap decreased over training, as the convergence conjecture predicts.")
         elif last > first + 0.05:
             print("WARNING: CCE-gap INCREASED - investigate training stability.")
         else:

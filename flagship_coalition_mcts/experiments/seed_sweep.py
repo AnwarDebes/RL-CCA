@@ -1,6 +1,6 @@
 """Multi-seed sweep utility: run any experiment script with multiple seeds.
 
-For paper-quality results, every experiment should be repeated with
+For reliable results, every experiment should be repeated with
 ≥3 seeds for variance estimation. This script automates that and
 collects the JSON outputs for results_table.py to aggregate.
 

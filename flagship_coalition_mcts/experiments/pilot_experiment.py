@@ -1,7 +1,7 @@
-"""experimental_pilot.py - first real result from the flagship pipeline.
+"""pilot_experiment.py - smallest end-to-end run of the CD-MCTS pipeline.
 
 Runs a tiny but complete experimental cycle on the kingmaker testbed
-that produces a real publishable result file in <2 minutes:
+that produces a result file in <2 minutes:
 
   1. Train CD-MCTS for 5 iterations on kingmaker (random init)
   2. Train scalar baseline (A0) for 5 iterations on kingmaker
@@ -14,14 +14,14 @@ This is the smallest meaningful experimental run. It demonstrates the
 entire pipeline works end-to-end on real data and produces a numerical
 result.
 
-Pre-registered prediction (binding):
+Prediction (fixed before running):
   P0 (scalar) win-rate < 0.40 - i.e., the CD-MCTS coalition can
   meaningfully suppress the scalar leader. With perfect play (game-tree
   solver shows the optimal coalition strategy gives P0 ≤ 1/3 wins),
   achieving ≤0.40 demonstrates CD-MCTS exploits the coalition pillar.
 
-NOTE: this is a tiny pilot with random-init network - the absolute
-numbers are NOT publishable, but the pipeline is verified.
+NOTE: this is a tiny pilot with a random-init network. The absolute
+numbers are not meaningful on their own; the run verifies the pipeline.
 
 Usage:
     python -m flagship_coalition_mcts.experiments.pilot_experiment \\

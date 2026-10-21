@@ -1,7 +1,8 @@
-"""Killer experiment: CD-MCTS vs scalar-PUCT on the kingmaker testbed.
+"""Main experiment: CD-MCTS vs scalar-PUCT on the kingmaker testbed.
 
-This is the experiment that defends the paper against the strongest
-reviewer attack - "coalitions don't really matter in your real games."
+The kingmaker game is built so that coalitions provably matter. If
+CD-MCTS cannot exploit them here, the coalition machinery is not doing
+its job.
 
 Setup
 -----
@@ -26,11 +27,11 @@ Three configurations:
   3. MIXED: seat P0 = scalar, seats P1 and P2 = CD. Record P0's win rate.
      **Predicted:** lower than the ALL_SCALAR P0-win-rate.
 
-Pre-registered prediction (binding)
------------------------------------
+Prediction (fixed before running)
+---------------------------------
 We predict that in ALL_CD, P0's win rate is at least 10 percentage points
-lower than in ALL_SCALAR. If this fails, the paper reports the failure
-and discusses why - possible reasons include insufficient training, the
+lower than in ALL_SCALAR. If this fails, the failure is reported
+and analysed - possible reasons include insufficient training, the
 coalition head not converging, or the kingmaker game being too small to
 elicit coordination via the loss signal.
 
@@ -285,7 +286,7 @@ def main():
     args = ap.parse_args()
 
     print("=" * 72)
-    print("KILLER EXPERIMENT: CD-MCTS vs Scalar-AZ on Kingmaker")
+    print("KINGMAKER EXPERIMENT: CD-MCTS vs Scalar-AZ")
     print("=" * 72)
 
     scalar_net = train_one_agent(

@@ -1,4 +1,4 @@
-"""Final-evaluation script: produces the paper's headline results table.
+"""Final-evaluation script: produces the main results table.
 
 Given trained checkpoints for each ablation variant (and optional
 external baselines), runs round-robin head-to-head tournaments and
@@ -238,7 +238,7 @@ def main():
         json.dump(results, f, indent=2)
     print(f"\nResults written to {args.out}")
     print("\nUse `python -m flagship_coalition_mcts.src.results_table --files",
-          args.out, "--format latex` to generate paper-ready table.")
+          args.out, "--format latex` to generate a LaTeX table.")
 
 
 if __name__ == "__main__":

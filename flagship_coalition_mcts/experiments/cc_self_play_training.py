@@ -1,8 +1,7 @@
 """CD-MCTS self-play training on real Chinese Checkers.
 
-Trains a CDMCTSNetwork on CC via self-play. This is the production-
-quality training script that runs after Phase 2 v4 completes (when GPU
-+ CPU are free).
+Trains a CDMCTSNetwork on CC via self-play. This is the full-scale
+training script (best run when no other training job holds the GPU).
 
 Loop
 ----
