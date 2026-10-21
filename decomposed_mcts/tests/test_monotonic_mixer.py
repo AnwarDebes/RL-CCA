@@ -1,6 +1,6 @@
 """Unit tests for the CMAZ monotonic mixer.
 
-Tests verify the four properties a flagship-quality QMIX-style mixer must satisfy:
+Tests verify the four properties a QMIX-style mixer must satisfy:
 
 1. Mixer weights w(s) sum to 1 (softmax property).
 2. Monotonicity: increasing any v_k strictly increases Q (when w_k > 0).

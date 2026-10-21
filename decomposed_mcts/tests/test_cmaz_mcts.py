@@ -162,7 +162,7 @@ def test_mixer_weighting_drives_action_preference():
 
 def test_inference_time_override_changes_decision():
     """Same network, but two different mixers produce different policies.
-    This is the core CMAZ killer property."""
+    This is the core CMAZ property."""
     weighted_to_0 = fixed_weight_mixer(np.array([1.0, 0.0]))
     weighted_to_1 = fixed_weight_mixer(np.array([0.0, 1.0]))
     _, pi_a = run_mcts_cmaz(
