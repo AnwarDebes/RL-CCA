@@ -38,7 +38,7 @@ from .network import CMAZEncoder, CMAZNetwork
 
 
 def kingmaker_features_for_cmaz(state: KingmakerState) -> np.ndarray:
-    """12-dim feature vector matching flagship's kingmaker_features."""
+    """12-dim feature vector matching kingmaker_features in CD-MCTS."""
     feats = np.zeros(12, dtype=np.float32)
     feats[0:3] = np.array(state.positions) / 3.0
     for p in state.finish_order:

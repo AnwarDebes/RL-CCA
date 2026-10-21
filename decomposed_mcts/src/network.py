@@ -1,14 +1,13 @@
 """CMAZ network: encoder + policy head + K-component value head + monotonic mixer.
 
-This is the unified network for the CMAZ workshop subproject. Differs
-from the flagship CD-MCTS network in:
+This is the unified network for CMAZ. It differs from the CD-MCTS
+network in:
 
   * The "value" head is K-component (one scalar per score component),
     not a Plackett-Luce rank distribution.
   * No coalition head.
   * The monotonic mixer collapses the K-vector to a scalar at MCTS time.
-  * The mixer can be overridden at inference for the killer property
-    (user-tunable utility).
+  * The mixer can be overridden at inference (user-tunable utility).
 """
 
 from __future__ import annotations
@@ -26,7 +25,7 @@ from .monotonic_mixer import ComponentValueHead, MonotonicMixer
 
 
 class CMAZEncoder(nn.Module):
-    """MLP encoder identical in spirit to the flagship's MLPEncoder."""
+    """MLP encoder, the same design as MLPEncoder in CD-MCTS."""
 
     def __init__(self, input_dim: int, hidden_dim: int = 64, num_layers: int = 2) -> None:
         super().__init__()

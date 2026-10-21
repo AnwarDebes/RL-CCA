@@ -1,7 +1,8 @@
 """CMAZ MCTS: PUCT with vector Q backup and monotonic-mixer aggregation.
 
-This is the workshop-tier sister of the flagship CD-MCTS. The novelty
-slice is:
+CMAZ is the score-decomposition companion of CD-MCTS
+(flagship_coalition_mcts/). It departs from AlphaZero MCTS in three
+places:
 
   * Per-component Q backups in MCTS (vector instead of scalar).
   * State-conditional monotonic mixer (QMIX-style) collapses the vector
@@ -9,7 +10,7 @@ slice is:
   * Inference-time override: the mixer's weights can be swapped for a
     user-specified utility without retraining.
 
-What makes this different from CD-MCTS (the flagship):
+Differences from CD-MCTS:
   * No Plackett-Luce rank head - the components are *score elements*
     (e.g., Chinese Checkers' pin_goal_score, distance_score,
     time_score, move_score), not players.
@@ -17,11 +18,11 @@ What makes this different from CD-MCTS (the flagship):
   * No EXP-IX selector - uses standard PUCT.
   * The monotonic mixer is the only departure from vanilla AlphaZero.
 
-What makes this not a reinvention of KataGo:
+Relation to KataGo:
   * KataGo uses a *fixed* utility λ_winrate · winrate + λ_score ·
     tanh(score). Coefficients are hand-tuned, state-independent, and the
     combiner is linear, not a hypernetwork.
-  * Our combiner is a learned, state-dependent QMIX-style hypernetwork.
+  * The CMAZ combiner is a learned, state-dependent QMIX-style hypernetwork.
 """
 
 from __future__ import annotations

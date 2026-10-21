@@ -1,6 +1,6 @@
 """CMAZ self-play loop.
 
-Mirrors the flagship's self_play.py but with score-component-decomposed
+Mirrors flagship_coalition_mcts/src/self_play.py but with score-component-decomposed
 targets and the monotonic-mixer-aggregated value used in MCTS.
 
 The 'observed components' for a trajectory entry are the per-component
@@ -10,7 +10,7 @@ illustration; for the real Chinese Checkers tournament these are the
 4 score components: pin_goal_score, distance_score, time_score, move_score.
 
 The CMAZ MCTS uses the network's mixer as the aggregator at every PUCT
-step. The killer experiment swaps the mixer for an override at inference.
+step. The inference-override experiment swaps the mixer for fixed weights.
 """
 
 from __future__ import annotations

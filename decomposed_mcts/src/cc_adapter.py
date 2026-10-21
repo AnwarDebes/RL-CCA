@@ -1,15 +1,15 @@
 """CMAZ on real Chinese Checkers - adapter + runner.
 
-Bridges the CMAZ workshop subproject to the user's tournament game.
-Key piece: CMAZ uses the 4 score components (pin_goal, distance, time,
-move) directly as the per-component value targets - exactly the
-semantic decomposition the user's tournament scoring formula provides.
+Connects CMAZ to the tournament version of the game. CMAZ uses the 4
+score components (pin_goal, distance, time, move) directly as the
+per-component value targets, which is exactly the decomposition the
+tournament scoring formula provides.
 
-This is the **actual reason CMAZ matters for the user**: the same
-trained network can be re-purposed at inference for different score
-weightings (e.g., 'play for blowouts', 'play conservatively') without
-retraining. The user's tournament weights (pin_goal=1000 / distance=200
-/ time=100 / move=1) are just one specific instantiation.
+The practical consequence: the same trained network can be re-purposed
+at inference for different score weightings (e.g., 'play for blowouts',
+'play conservatively') without retraining. The tournament weights
+(pin_goal=1000 / distance=200 / time=100 / move=1) are one specific
+instantiation.
 """
 
 from __future__ import annotations
@@ -28,8 +28,8 @@ _NEXUS_ROOT = os.path.abspath(
 if _NEXUS_ROOT not in sys.path:
     sys.path.insert(0, _NEXUS_ROOT)
 
-# We import the CC adapter from the flagship subproject - the game
-# interface is shared between flagship and CMAZ.
+# The CC adapter lives in flagship_coalition_mcts; the game interface
+# is shared between CD-MCTS and CMAZ.
 from flagship_coalition_mcts.src.cnn_encoder import CCCNNEncoder, feature_to_tensor
 from flagship_coalition_mcts.src.games.chinese_checkers import (
     ChineseCheckersGame,
@@ -121,8 +121,7 @@ def play_one_cmaz_cc_game(
     """Play one CMAZ-on-CC game using the given network.
 
     If override_weights is given, the mixer uses those at inference
-    (the killer-property demonstration: same network, different
-    utility).
+    (same network, different utility).
     """
     rng = np.random.default_rng(seed)
     state = make_cc_env(num_players=num_players, seed=seed)

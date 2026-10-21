@@ -2,7 +2,7 @@
 
 __version__ = "0.1.0"
 __title__ = "CMAZ - Component-Mixed AlphaZero"
-__author__ = "(see paper)"
+__author__ = "Anwar Debes"
 
 from .monotonic_mixer import ComponentValueHead, MonotonicMixer
 from .network import (

@@ -9,7 +9,7 @@ non-negativity of w.
 
 This is a faithful adaptation of QMIX's mixing network (Rashid et al.
 2018) from per-AGENT decomposition to per-OBJECTIVE decomposition. The
-key novel property for CMAZ is **inference-time override**: the same
+key property for CMAZ is **inference-time override**: the same
 trained mixer can be evaluated with a user-supplied w' instead of w(s),
 allowing one network to serve any user-tunable utility function over the
 known semantic components of the game's reward (e.g., Chinese Checkers'
