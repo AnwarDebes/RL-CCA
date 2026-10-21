@@ -267,19 +267,15 @@ training-state snapshot suitable for head-to-head evaluation.
 
 ## Research subprojects
 
-Three independent research efforts live alongside the main agent:
+Three research prototypes live alongside the main agent. Each has its own
+`README.md`, tests and experiment scripts, and all three run on the real
+Chinese Checkers environment (`python -m flagship_coalition_mcts smoke`).
 
-* `flagship_coalition_mcts/`: Coalition-Distributional MCTS for N-player
-  non-zero-sum games, using Plackett-Luce rank-distribution value heads,
-  state-conditional coalition belief posteriors, and EXP-IX no-regret action
-  selectors.
-* `decomposed_mcts/` (CMAZ): a state-conditional QMIX-style monotonic mixer
-  over per-objective values, with inference-time utility re-weighting.
-* `equivariant_net/`: a C6 wr S_N wreath-product equivariant network for
-  star-hex Chinese Checkers, with bit-identical seat permutation invariance
-  and ASEN-style active-subgroup gating.
-
-Each subproject has its own `README.md`, tests, and experiments directory.
+| Subproject | Idea | Tests |
+| --- | --- | --- |
+| [`flagship_coalition_mcts/`](flagship_coalition_mcts/) (CD-MCTS) | Plackett-Luce rank-distribution value head, state-conditional coalition beliefs and EXP-IX no-regret selection for N-player non-zero-sum games | 202 |
+| [`decomposed_mcts/`](decomposed_mcts/) (CMAZ) | Per-component values with a state-conditional QMIX-style monotonic mixer inside MCTS, re-weightable at inference | 39 |
+| [`equivariant_net/`](equivariant_net/) | C6 ≀ S_N wreath-equivariant network for the star-hex board, exact under board rotations and seat permutations | 33 |
 
 ## References
 
@@ -291,6 +287,7 @@ Each subproject has its own `README.md`, tests, and experiments directory.
   <https://arxiv.org/abs/1910.13012>
 * Wu. *Accelerating Self-Play Learning in Go*, 2019.
   <https://arxiv.org/abs/1902.10565>
-* He et al. *Efficient Learning in Chinese Checkers*, 2024.
+* Gu, Adhikari. *Efficient Learning in Chinese Checkers: Comparing Parameter
+  Sharing in Multi-Agent Reinforcement Learning*, 2024.
   <https://arxiv.org/abs/2405.18733>
 * Busbridge et al. *How to Scale Your EMA*, NeurIPS 2023.

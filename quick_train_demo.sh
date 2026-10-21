@@ -8,7 +8,7 @@
 #
 # Outputs:
 #   results/quick_train_demo/
-#     cdmcts_kingmaker.json   - flagship's kingmaker H2H output
+#     cdmcts_kingmaker.json   - CD-MCTS kingmaker H2H output
 #     cmaz_kingmaker_train_demo.txt - CMAZ's train + override demo
 #     wreath_demo.txt         - wreath equivariance verification
 
