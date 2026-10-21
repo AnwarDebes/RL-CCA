@@ -1,5 +1,10 @@
 # NEXUS
 
+[![tests](https://github.com/AnwarDebes/RL-CCA/actions/workflows/tests.yml/badge.svg)](https://github.com/AnwarDebes/RL-CCA/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/python-3.10%2B-3776AB?logo=python&logoColor=white)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)
+![Tests](https://img.shields.io/badge/unit%20tests-326-2f6f8f)
+
 A reinforcement-learning agent for N-player Chinese Checkers (N from 2 to 6),
 built on an AlphaZero-style training loop with Gumbel MCTS, per-player value
 backup, and a KataGo-style nested-bottleneck residual backbone. The agent
