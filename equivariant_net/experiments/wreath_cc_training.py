@@ -1,10 +1,10 @@
 """Wreath-equivariant self-play training on Chinese Checkers.
 
 Trains a WreathCCNetwork via vanilla AlphaZero-style self-play. The
-contribution is the *equivariant architecture* - comparison vs
-non-equivariant baselines is the killer experiment.
+contribution is the *equivariant architecture*, so the key comparison
+is against non-equivariant baselines.
 
-Headline experiments (run after training):
+Evaluations (run after training):
   1. Sample efficiency vs MLPEncoder + same-size non-equivariant network.
   2. Zero-shot N-generalisation: train on N=2 and N=3 only, evaluate
      on N=4 and N=6 with NO retraining.
