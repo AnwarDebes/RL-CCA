@@ -1,193 +1,118 @@
-# Coalition-Distributional MCTS for N-Player Non-Zero-Sum Self-Play
+# CD-MCTS: Coalition-Distributional MCTS
 
-**Status:** scaffolding - implementation gated on adversarial novelty-verification round (in progress).
+Self-play tree search for games with more than two players, where opponents can gang up on the leader and a losing player can decide who wins.
 
-**Target venue:** flagship ML conference (NeurIPS / ICML / ICLR main track) or top game-AI venue.
+Research prototype inside [NEXUS](../README.md). About 5,400 lines of source with 202 unit tests. The experiments are scripted end to end; results are not reported yet.
 
-**Honest novelty self-assessment (after 2 verification rounds):** plausibly flagship-novel. Not "nobody ever thought of this" - that bar is essentially unattainable. Rather: the four-pillar combination is not in the literature, and the closest priors are clearly distinguishable.
+## Problem
 
----
+AlphaZero is built for two-player zero-sum games. With three to six players, two things break:
 
-## 1. Problem statement
+* **The value is not a single number.** What matters is the full finishing order, and opponents' outcomes are correlated.
+* **Opponents are not all against you, or all independent.** Classical N-player search fixes the opponent model in advance: everyone maximises their own result (maxn), everyone plays against you (paranoid), or only the single strongest reply among all opponents is considered (best-reply search). In real play, alignments change with the position, for example when two trailing players both slow down the leader.
 
-For N-player **non-zero-sum** perfect-information board games (Chinese Checkers, Halma, multi-player Hex/Go variants), all standard self-play algorithms inherit a foundational limitation:
+## Method
 
-- **AlphaZero / Multiplayer AlphaZero (Petosa & Balch 2019)** outputs a per-player scalar value vector `v ∈ ℝᴺ`. PUCT selection uses the current player's coordinate.
-- **Maxn (Luckhardt 1986), Paranoid (Sturtevant & Korf 2000), BRS (Schadd 2011)** - the classical N-player tree-search foundations - all assume *fixed, hand-specified opponent models* (everyone independent / everyone colluding / one unified opponent). All are provably suboptimal in non-zero-sum settings.
-- **Player of Games (Schmid et al. 2021)** unifies CFR + MCTS for **2-player zero-sum**.
+CD-MCTS replaces three parts of multiplayer AlphaZero.
 
-The 40-year-old open problem: a principled self-play algorithm for N-player non-zero-sum games whose value structure captures correlations between opponent outcomes (kingmaker dynamics, coalition incentives) and whose action selection is rooted in a meaningful game-theoretic equilibrium concept rather than ad-hoc heuristics.
+**1. Rank-distribution value head (Plackett-Luce).** The network outputs one strength per player, $\theta \in \mathbb{R}^N$. The probability of a finishing order σ, where σ(k) is the player in place k, is
 
-## 2. Contribution claim (reviewer-proof phrasing)
+$$
+P(\sigma \mid \theta) = \prod_{k=1}^{N} \frac{\exp \theta_{\sigma(k)}}{\sum_{j=k}^{N} \exp \theta_{\sigma(j)}}
+$$
 
-> We introduce **Coalition-Distributional MCTS (CD-MCTS)**, the first self-play algorithm for N-player non-zero-sum perfect-information games that combines (i) a **Plackett-Luce-factorized rank-distribution value head** predicting a structured distribution over the symmetric group `S_N` of final placements, parameterized in `O(N²)` rather than `O(N!)`; (ii) a **coalition-probability head** outputting a posterior over opponent alignment subsets at each state; (iii) a **no-regret action-selection operator** replacing PUCT, derived from the EXP-IX family and conditioned on the inferred coalition posterior; and (iv) a self-play loop with **empirical convergence to a coarse correlated equilibrium** of the induced N-player meta-game. We instantiate CD-MCTS on Chinese Checkers (N=2..6), 4-player Halma, and 3-player 5×5 Go, ablate each pillar, and show monotone gains on Elo, win-rate vs all-paranoid baselines, and CCE-gap metrics.
+This describes a distribution over all N! orders with only N numbers per state. The winner marginal is softmax(θ), and full placement marginals are computed exactly by enumeration for N ≤ 6.
 
-The load-bearing phrases - each defuses a specific reviewer attack:
+**2. Coalition-belief head.** The network outputs pairwise alignment logits A and a concentration β ≥ 0. For player p, the belief that the set C of opponents is aligned against p is
 
-| Phrase | Defuses |
-|---|---|
-| Plackett-Luce factorization | "N! is intractable" |
-| Coalition posterior | "Distinguishes from fixed maxn/paranoid" |
-| EXP-IX / no-regret operator | "What's the equilibrium concept?" |
-| Empirical CCE convergence | "Where's the theory?" |
-| Three games × ablation ladder | "Just multiplayer AZ + heads" |
+$$
+P(C \mid s, p) \propto \exp\Big(\beta \sum_{q \in C} A_{pq} - \beta \sum_{q \notin C,\, q \neq p} A_{pq}\Big)
+$$
 
-## 3. Closest prior art (after 2 verification rounds)
+With β = 0 this is uniform (no information); as β grows it collapses to one coalition. It is trained on which opponents actually finished ahead of p in self-play.
 
-| Prior work | Relation | Distinction |
-|---|---|---|
-| **Yu et al. 2024 (NN-CCE, NeurIPS 2024, arxiv 2406.10411)** | **Closest neighbor - surfaced by adversarial verification** | CCE-approximating MCTS with NN value heads. **Simultaneous-move 2-agent matrix games at each node.** No Plackett-Luce rank head, no coalition posterior, not N-player sequential. Must be implemented as a baseline (extended to N players) and beaten on exploitability. |
-| Petosa & Balch 2019 (Multiplayer AlphaZero, NeurIPS DRL Workshop) | Same problem class | Per-player scalar vector value, no rank distribution, no coalition head. **Strongest practical baseline.** |
-| Yu/Tang 2025 (Simultaneous AlphaZero, arxiv 2512.12486) | Regret-optimal MCTS | 2-player zero-sum only, no rank distribution, no coalition head. |
-| Marris et al. 2021 (JPSRO/MGCE meta-solvers) | N-player CE | PSRO/empirical-game style, not in-tree MCTS, no rank distribution. |
-| Sun et al. (DFAC, MCMARL) | Distributional MARL | Cooperative QMIX-style scalar-return distributions, no rank/permutation structure, no coalition reasoning, no MCTS. |
-| Wu & Ramchurn 2020 (MCTS for coalition formation, IJCAI) | MCTS over coalitions | Search over coalition-structure graph, NOT used as opponent-belief inside an N-player game tree. |
-| Schmid et al. 2021 (Player of Games) | Search + RL unification | 2-player zero-sum only. No N-player non-zero-sum extension. |
-| Bauer et al. (Distributional MCTS Thompson, OpenReview) | Distributional MCTS | Single-agent stochastic, NOT joint-outcome distributions over players. |
-| Dal Lago 2025 (Diplomacy coalition detection, 2502.16339) | Coalition belief in games | Imperfect-info dialogue-driven, no rank distribution, no MCTS architecture. |
-| Sturtevant 2019 (Strongly Solving Chinese Checkers) | Same game | Combinatorial endgame solver, no NN, no MCTS, no self-play. |
-| Sokota et al. (EXP-IX → CCE in MCTS) | Same equilibrium concept | 2-player or simultaneous-move, no rank distribution, no coalition head. |
-| Marris et al. (max-Gini CE meta-solvers, DeepMind) | CCE in game solving | Meta-game solver over a population, not in-tree backup. |
+**3. No-regret action selection.** PUCT is replaced by an EXP-IX style Hedge rule at every node. The sampling distribution is shifted by the coalition belief, using the probability that some member of the believed coalition wins from the child state. The target is a coarse correlated equilibrium (CCE) of the per-state meta-game rather than a single best arm.
 
-**After 3 verification rounds (last one explicitly adversarial), final novelty calibration: ~80% confident the specific four-pillar combination is unpublished.** No round above ~85% is honest in 2026.
+**4. Vector backup.** Instead of a scalar, the full N × N placement-marginal matrix is averaged up the tree. Any utility over placements can be applied afterwards without searching again.
 
-**The single hardest reviewer attack** the adversarial round identified:
-> "NN-CCE (2406.10411) already achieves CCE convergence inside neural tree search on general-sum games; your contribution reduces to swapping the value head."
+## Testbeds
 
-**The only experiment that defuses it** (this is now part of the ablation plan):
-A head-to-head on N≥4 perfect-info non-zero-sum (4-player Chinese Checkers, 4-player Halma, or a small Catan/Risk-lite) where:
-1. NN-CCE-extended-to-N-players is implemented from the public code as a primary baseline.
-2. Our method shows statistically significant CCE-gap / exploitability reduction.
-3. Ablation: removing the PL head OR the coalition posterior independently degrades performance toward NN-CCE level.
+| Game | Players | Why |
+| --- | --- | --- |
+| Kingmaker race (`src/games/kingmaker.py`) | 3 | Built so that coalitions provably matter: the leader can only be stopped if both trailing players spend a turn tripping it, which neither does alone. Small enough to solve exactly. |
+| Small Halma (`src/games/halma_small.py`) | 3 | 5 × 5 board, 3 pieces each. Paths cross in the centre, so interaction is strong. |
+| Chinese Checkers (`src/games/chinese_checkers.py`) | 2 to 6 | The full tournament game, through the NEXUS environment. |
 
-Without all three, contribution shrinks to "PL head as auxiliary objective." We must be ready to publish that smaller claim honestly if it's what the data shows.
+## Baselines and ablation ladder
 
-## 4. Architecture
+| Variant | Value | Coalition head | Selection |
+| --- | --- | --- | --- |
+| A0, multiplayer AlphaZero | scalar per player | no | PUCT |
+| A1 | Plackett-Luce | no | PUCT |
+| A2 | Plackett-Luce | yes | PUCT |
+| A3, full CD-MCTS | Plackett-Luce | yes | EXP-IX |
+| B, NN-CCE extended to N players | scalar per player | no | EXP-IX |
 
-```
-                    ┌──────────────────────┐
-                    │   Encoder backbone   │  (shared with workshop sub-projects)
-                    └──────────┬───────────┘
-                               │
-          ┌────────────────────┼────────────────────┐
-          ▼                    ▼                    ▼
-   ┌──────────────┐   ┌────────────────┐   ┌──────────────────┐
-   │ Policy head  │   │  Plackett-Luce │   │ Coalition-belief │
-   │  π(a|s)      │   │  rank head     │   │  head: ψ(C|s)    │
-   │              │   │  s ↦ {θ_p}_p   │   │  for C ⊆ {1..N}  │
-   └──────────────┘   └────────┬───────┘   └─────────┬────────┘
-                               │                     │
-                               │   PL.factorize      │
-                               ▼                     │
-                    distribution over S_N            │
-                               │                     │
-                               └──────┬──────────────┘
-                                      ▼
-                        ┌──────────────────────────────┐
-                        │  CCE-regret action selector  │
-                        │  (replaces PUCT)             │
-                        └──────────────────────────────┘
-```
+Each step up the ladder has to beat the one below it at matched compute.
 
-**Plackett-Luce factorization:** the value head outputs a vector of player "strengths" `θ ∈ ℝᴺ`. The induced distribution over rank-orderings is
+## Measurement
 
-```
-P(σ | s) = ∏_{k=1}^{N} exp(θ_{σ(k)}) / ∑_{j=k}^{N} exp(θ_{σ(j)})
+* **Exploitability and CCE gap**, computed exactly by best-response enumeration on the kingmaker game (`src/exploitability.py`).
+* **Head-to-head Elo** with bootstrap confidence intervals and a permutation test (`src/head_to_head.py`).
+* **Seed sweeps** and Markdown or LaTeX result tables (`experiments/seed_sweep.py`, `src/results_table.py`). Results are meant to be reported as median and spread across seeds, not the best seed.
+
+## Implementation
+
+| File | Contents |
+| --- | --- |
+| `src/plackett_luce.py` | Head, sampling, log-likelihood, exact and sampled placement marginals |
+| `src/coalition_head.py` | Pairwise alignment head, coalition enumeration, entropy, training loss |
+| `src/cce_selector.py` | EXP-IX selector with Hedge updates and IX exploration |
+| `src/mcts.py` | Tree with placement-marginal backup and selector dispatch |
+| `src/baseline_mcts.py`, `src/nn_cce_baseline.py` | Baselines A0 and B |
+| `src/network.py`, `src/cnn_encoder.py` | CD-MCTS network; CNN encoder for the 32 × 17 × 17 board tensor (482,449 parameters in the Chinese Checkers configuration) |
+| `src/self_play.py`, `src/replay_buffer.py`, `src/checkpoint.py`, `src/subtree_reuse.py` | Training loop, buffer, resumable checkpoints, tree reuse between moves |
+| `src/tournament_player_cdmcts.py` | Tournament player, run with `scripts/play_server_cdmcts.py` |
+| `experiments/` | Pilot, kingmaker head-to-head, CCE-gap tracking, ablation ladder, final evaluation |
+
+## Running
+
+From the repository root:
+
+```bash
+python -m flagship_coalition_mcts summary       # parameter counts per submodule
+python -m flagship_coalition_mcts compare       # comparison with CMAZ and the equivariant network
+python -m flagship_coalition_mcts smoke         # all three subprojects on real Chinese Checkers
+python -m flagship_coalition_mcts.experiments.pilot_experiment --seed 0 --out results/pilot.json
+python -m flagship_coalition_mcts.experiments.kingmaker_head_to_head --seed 0
+python -m pytest flagship_coalition_mcts/tests -q   # 202 tests
 ```
 
-This gives an `O(N²)` parameterization of a distribution over the `N!` orderings, with closed-form placement marginals `P(player p finishes in position k)`.
+On a CPU, the pilot finishes in about 30 seconds and the kingmaker head-to-head in a few minutes.
 
-**Coalition head:** outputs `ψ : 2^{N-1} → [0,1]` over subsets of opponents. For tractability we factorize as pairwise terms `ψ(p, q) = P(opponents p and q are aligned)` plus a temperature.
+## What the tests check
 
-**CCE-regret selector:** at each tree node, instead of `argmax_a [ Q(s,a) + c · π(a|s) · √(N) / (1+n(s,a)) ]`, we use an EXP-IX-style update that targets a coarse correlated equilibrium of the inferred per-state meta-game. Concretely: maintain regret estimates per child, sample from Hedge-style policy with γ-mixing for IX exploration. This is the most theoretically novel pillar.
+* Plackett-Luce probabilities sum to one over all orders, the winner marginal equals softmax(θ), sampling matches the likelihood (chi-squared test), and inactive seats are masked.
+* Coalition beliefs are normalised, uniform at β = 0 and concentrated as β grows; the training loss moves beliefs towards the observed coalition.
+* The selector has square-root regret on a stochastic bandit, starts from the prior, and two selectors in self-play on matching pennies converge to the Nash equilibrium.
+* Exploitability is non-negative and best responses match an exact solver on the kingmaker game.
+* Search, training, checkpoint resume, tournament player and the full Chinese Checkers integration run end to end.
 
-## 5. Ablation ladder
+## Open questions
 
-Every reviewer will demand this. Each row must show a measurable Elo / win-rate / CCE-gap improvement over the previous:
+* Convergence of the self-play loop to a CCE of the N-player game is a conjecture, which is why the CCE gap is tracked empirically.
+* The pairwise coalition factorisation is weaker than a full distribution over coalitions; the full and truncated versions are planned ablations.
+* The coalition head could stay close to uniform in games where alignments are weak. The kingmaker game exists to test exactly this.
 
-1. (A0) Multiplayer AlphaZero baseline (Petosa) - scalar vector value, PUCT.
-2. (A1) Add: rank-ordering distribution head (Plackett-Luce). Selector unchanged.
-3. (A2) Add: coalition-probability head. Selector still PUCT but uses coalition belief in Q-aggregation.
-4. (A3) Replace: PUCT → EXP-IX-style CCE-regret selector. **Full CD-MCTS.**
+## Related work
 
-If any row fails to monotone-improve, the contribution falls back to whichever rows did improve and we publish that smaller claim honestly.
-
-## 6. Empirical evaluation
-
-Three games chosen to expose different facets:
-
-- **Chinese Checkers, N=2..6.** Tournament game. Big enough to matter, small enough for reasonable compute. Coalition incentives weak in early game, strong in late game.
-- **4-player Halma.** Stronger coalition incentives because piece-to-goal paths cross.
-- **3-player 5×5 Go variant** (per Adhikari & Gu 2024). Shared liberties create explicit coalition incentives.
-
-For each game:
-- Self-play training to convergence (matched FLOPs across all ablation variants)
-- Round-robin evaluation: A0/A1/A2/A3 + paranoid + maxn baselines
-- Headline metric: Elo
-- Secondary: win rate against fixed strong opponent (heuristic + Petosa-baseline)
-- **Theory metric: empirical CCE-gap** measured on held-out states by exploitability of best deviation
-
-## 7. Theorem attempt (the (c) → (d) move)
-
-The single experiment that turns this from "well-executed combination" into "novel algorithmic primitive" is a proof of:
-
-> **Conjecture.** Under standard regularity assumptions (bounded value, finite action set, no degenerate ties), self-play with CD-MCTS using EXP-IX selection at every node converges in expectation to a coarse correlated equilibrium of the N-player extensive-form meta-game.
-
-The proof sketch - leveraging Sokota et al. on EXP-IX → CCE in 2-player and extending via the coalition posterior - is feasible but not trivial. If it works, this is an oral submission. If it doesn't, we present the empirical CCE-gap measurements and frame as conjectural.
-
-I will commit honest effort to this proof and report negative results truthfully.
-
-## 8. Compute discipline
-
-CPU only until Phase 2 v4 of the main RL agent finishes. The flagship subproject must NOT touch the GPU while the tournament agent is training. Exception: post-Phase 2 v4, we may use the GPU for the killer experiment runs.
-
-## 9. Layout
-
-```
-flagship_coalition_mcts/
-  src/
-    encoder.py          # shared encoder backbone
-    plackett_luce.py    # rank distribution head + sampling + log-likelihood
-    coalition_head.py   # opponent-subset belief head
-    cce_selector.py     # EXP-IX-style action selector
-    mcts.py             # tree with vector backups + selector dispatch
-    trainer.py          # joint loss: policy + PL-NLL + coalition-NLL
-    games/
-      chinese_checkers.py
-      halma.py
-      go_5x5_3p.py
-  experiments/
-    ablation_ladder.py     # A0 → A3 across all 3 games
-    cce_gap_eval.py        # empirical equilibrium gap measurement
-    sample_efficiency.py
-  tests/
-    test_plackett_luce_marginals.py
-    test_coalition_head_calibration.py
-    test_cce_selector_recovers_puct.py   # special case sanity
-    test_mcts_correctness.py
-  theory/
-    cce_convergence_proof.tex
-    convergence_proof_outline.md
-  docs/
-    paper_outline.md
-    related_work_table.md
-```
-
-## 10. Honest risks
-
-- **Risk: the theorem doesn't go through.** Fallback: empirical CCE-gap claim, paper drops to workshop tier.
-- **Risk: coalition head is degenerate** (predicts uniform regardless of state). Mitigation: design a controlled synthetic kingmaker game where coalitions are provably present. If even on that the head doesn't activate, the contribution collapses.
-- **Risk: ablation ladder fails to monotone-improve.** Mitigation: publish honestly with only the rows that did. This is what a real scientist does.
-- **Risk: a 2026 paper we missed already does this.** Mitigation: ongoing adversarial verification rounds.
-- **Risk: compute-blow-up.** Each ablation variant × 3 games × matched FLOPs is significant. Mitigation: small game variants for the ladder, scale-up only the top variant.
-
-## 11. Conduct
-
-We will:
-- Report negative results honestly.
-- Not cherry-pick seeds.
-- Not hide failed ablations.
-- Pre-register ablation thresholds.
-- Release code and reproducible experiments.
-
-These are the table-stakes for a flagship paper that survives reviewer scrutiny in 2026. We do not relax them.
+| Work | Relation |
+| --- | --- |
+| Petosa and Balch, *Multiplayer AlphaZero*, 2019 | Per-player value vector with PUCT. Baseline A0. |
+| Luckhardt and Irani, 1986; Sturtevant and Korf, 2000; Schadd and Winands, 2011 | maxn, paranoid and best-reply search: fixed opponent models. |
+| Plackett, 1975; Luce, 1959 | The ranking model behind the value head. |
+| Neu, *Explore no more* (EXP3-IX), NeurIPS 2015 | The bandit algorithm behind the selector. |
+| Hart and Mas-Colell, *A Simple Adaptive Procedure Leading to Correlated Equilibrium*, 2000 | No-regret play and correlated equilibria. |
+| Yu, Olshevsky and Chin, *Tree Search for Simultaneous Move Games via Equilibrium Approximation*, 2024 | Closest method: CCE-approximating tree search for simultaneous-move games. Baseline B. |
+| Danihelka et al., *Policy Improvement by Planning with Gumbel*, ICLR 2022 | The search used by the main NEXUS agent. |
+| Sturtevant, *On Strongly Solving Chinese Checkers*, 2019 | Exact solving of small boards, without learning. |

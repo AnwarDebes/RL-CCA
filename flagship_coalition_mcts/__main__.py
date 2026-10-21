@@ -20,8 +20,7 @@ Examples:
   python -m flagship_coalition_mcts summary --format latex
   python -m flagship_coalition_mcts smoke --num-players 2
 
-For detailed deployment instructions see flagship_coalition_mcts/DEPLOY.md.
-For experiment recipes see flagship_coalition_mcts/docs/PHASE2_EXPERIMENT_BLUEPRINT.md.
+Experiment scripts live in flagship_coalition_mcts/experiments/.
 """
 
 
