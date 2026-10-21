@@ -4,7 +4,7 @@ Reads the JSON output of ablation experiments and head-to-head runs,
 produces:
 
   * A clean summary table (text + markdown).
-  * A LaTeX table ready to paste into the paper.
+  * A LaTeX table ready to paste into a paper.
   * A simple matplotlib plot (Elo ± CI per variant per game).
 
 Usage

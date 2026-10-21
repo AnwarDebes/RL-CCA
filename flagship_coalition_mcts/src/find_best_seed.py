@@ -1,9 +1,9 @@
 """Pick the best (and median, and worst) seed from a sweep.
 
 After running an experiment with multiple seeds, this picks the
-"best" / "median" / "worst" by a chosen metric. CRITICAL: the paper
-reports the *median* and *std*, not the *best* - using only the best
-seed is cherry-picking and we explicitly call it out.
+"best" / "median" / "worst" by a chosen metric. Results should be
+reported as *median* and *std*, not the *best* seed: reporting only the
+best seed overstates the effect.
 
 Usage:
     python -m flagship_coalition_mcts.src.find_best_seed \\
@@ -98,8 +98,8 @@ def main():
             print(f"\n  mean ± std = {mean:+.4f} ± {std:.4f}")
             print(f"  range      = [{min(values):+.4f}, {max(values):+.4f}]")
             print()
-            print("  IMPORTANT: For the paper, report MEAN ± STD, not just BEST.")
-            print("  Reporting only BEST is cherry-picking and reviewers will catch it.")
+            print("  IMPORTANT: report MEAN ± STD, not just BEST.")
+            print("  Reporting only BEST overstates the effect.")
 
 
 if __name__ == "__main__":

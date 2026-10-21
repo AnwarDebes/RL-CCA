@@ -1,7 +1,7 @@
 """MCTS tree visualisation / debugging utility.
 
 After running run_mcts(), inspect the resulting tree to verify the
-search behaved as expected. Used during paper-figure preparation and
+search behaved as expected. Used when preparing figures and
 when investigating unexpected policies.
 
 Public functions:

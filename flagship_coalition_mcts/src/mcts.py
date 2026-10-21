@@ -14,9 +14,8 @@ expected rank - derived from the relevant row of M - is the scalar passed
 to the regret update; but storing the full matrix lets us:
 
     * Re-aggregate at any node via any utility function (the "inference-time
-      re-weighting" experiment from CMAZ that survives even at flagship
-      scale).
-    * Compute interpretable per-state mixer weights for the paper.
+      re-weighting" experiment from CMAZ carries over).
+    * Compute interpretable per-state mixer weights.
     * Plug in alternative aggregation operators in ablations without
       re-running self-play.
 

@@ -1,6 +1,6 @@
 """EXP-IX-style no-regret action selector for CD-MCTS.
 
-This is the third novel pillar of CD-MCTS. It replaces PUCT with a Hedge /
+This is the third component of CD-MCTS. It replaces PUCT with a Hedge /
 EXP-IX-style sampling rule whose theoretical anchor is a coarse correlated
 equilibrium (CCE) of the per-state action meta-game.
 

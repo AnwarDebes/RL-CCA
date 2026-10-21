@@ -1,12 +1,12 @@
 """Coalition-Distributional MCTS - public API.
 
-Top-level imports for the flagship subproject. Use these instead of
-deep-importing from submodules.
+Top-level imports for CD-MCTS. Use these instead of deep-importing
+from submodules.
 """
 
 __version__ = "0.1.0"
 __title__ = "Coalition-Distributional MCTS"
-__author__ = "(see paper)"
+__author__ = "Anwar Debes"
 
 # Network components
 from .network import CDMCTSEvaluator, CDMCTSNetwork, MLPEncoder, cdmcts_loss

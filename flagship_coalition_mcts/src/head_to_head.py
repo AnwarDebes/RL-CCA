@@ -7,7 +7,7 @@ Chinese Checkers (or any of the three testbed games). Reports:
   * Elo gap with 95% bootstrap confidence interval
   * statistical significance (p-value via permutation test)
 
-Used to populate the paper's results tables. The "agent" interface is
+Used to build the results tables. The "agent" interface is
 duck-typed: any callable that maps state -> action_idx (over legal
 actions) suffices. CD-MCTS, CMAZ, NN-CCE, scalar-PUCT all conform.
 """

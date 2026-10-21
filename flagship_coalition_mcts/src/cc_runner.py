@@ -5,11 +5,10 @@ Wires together:
   * CDMCTSNetwork           - encoder + 4 heads (policy, PL, coalition, scalar V)
   * ChineseCheckersGame     - duck-typed game adapter wrapping GameEnv
   * CDMCTSEvaluator         - converts state → NetworkOutput
-  * run_mcts (flagship MCTS) - vector backup + EXP-IX selector + coalition penalty
+  * run_mcts (CD-MCTS)       - vector backup + EXP-IX selector + coalition penalty
 
-This module is the *production-quality* bridge that lets us actually
-run CD-MCTS self-play and inference on the real tournament game once
-v4 RL training finishes Phase 1.
+This module is the bridge that runs CD-MCTS self-play and inference
+on the real tournament game.
 
 Usage
 -----
@@ -133,7 +132,7 @@ def build_cc_evaluator(
 
 
 # ----------------------------------------------------------------------
-# CC self-play with flagship CD-MCTS
+# CC self-play with CD-MCTS
 # ----------------------------------------------------------------------
 
 

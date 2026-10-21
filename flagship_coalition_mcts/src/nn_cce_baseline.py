@@ -1,13 +1,13 @@
-"""NN-CCE baseline (Yu et al., NeurIPS 2024) extended to N-player sequential games.
+"""NN-CCE baseline (Yu, Olshevsky and Chin, 2024) extended to N-player sequential games.
 
-This is the **strongest external baseline** for the flagship paper. The
-adversarial novelty-verification round identified NN-CCE (arxiv
-2406.10411) as the closest published threat. This file implements an
-extension of NN-CCE to N-player sequential perfect-information games so
-we can compare CD-MCTS against it head-to-head.
+This is the **strongest external baseline** for CD-MCTS: NN-CCE
+(arXiv:2406.10411) is the closest published method. This file
+implements an extension of NN-CCE to N-player sequential
+perfect-information games so CD-MCTS can be compared against it
+head-to-head.
 
-NN-CCE in original form (Yu et al. 2024)
-----------------------------------------
+NN-CCE in original form (Yu, Olshevsky and Chin 2024)
+-----------------------------------------------------
 For *simultaneous-move 2-player matrix games at each tree node*, NN-CCE
 maintains per-action regrets and selects via a no-regret learner whose
 average distribution converges to a CCE of the per-node matrix game.
@@ -31,7 +31,7 @@ with CCE convergence guarantees - to this setting is:
      V[mover](child) - V[mover](current).
   3. Backup: per-player scalar value averaged up the tree.
 
-By Lemma 2 of our theorem document, the resulting empirical root play
+By the standard no-regret argument, the resulting empirical root play
 converges to a CCE of the induced root meta-game. This is exactly the
 NN-CCE convergence claim, applied to sequential games via the standard
 extensive-form-as-meta-game reduction.

@@ -2,7 +2,7 @@
 
 At each state s, this head outputs a posterior over which subsets of
 opponents are *aligned against* the current player. This is the second
-novel pillar of CD-MCTS (the first being the Plackett-Luce rank value head).
+component of CD-MCTS (the first being the Plackett-Luce rank value head).
 
 Why this head exists
 --------------------
@@ -46,8 +46,8 @@ field beta * A[p,:]. It
     indicator from rollout outcomes.
 
 The factorization is admittedly weaker than a full Bell-number-many
-distribution, but it captures the dominant pairwise structure, and the
-ablation in our paper compares against full-categorical and truncated
+distribution, but it captures the dominant pairwise structure. The
+planned ablation compares it against full-categorical and truncated
 versions to show the trade-off.
 """
 
@@ -207,8 +207,7 @@ def negative_log_likelihood_coalition(
     The "observed coalition" is built from rollout outcomes: at the end of
     a self-play game, the set of opponents who finished ahead of `player`
     (or analogously, opponents whose actions correlated with hurting
-    `player`'s outcome - this is the operationalisation we ablate in the
-    paper).
+    `player`'s outcome - an alternative operationalisation to ablate).
     """
     coals, log_probs = coalition_log_probs(A, beta, player, num_players)
     obs = tuple(sorted(observed_coalition))

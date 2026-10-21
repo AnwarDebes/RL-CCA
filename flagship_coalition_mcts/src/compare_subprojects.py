@@ -1,24 +1,19 @@
 """Side-by-side comparison of the three research subprojects.
 
-Generates a paper-quality comparison table showing what each subproject
-contributes, what's shared, and how they relate. Used in the paper's
-"Background" or "Related Work" section.
+Generates a comparison table (Markdown or LaTeX) showing what each
+subproject contributes, what is shared, and how they relate to prior
+work.
 """
 
 from __future__ import annotations
 
 
 COMPARISON_TABLE = [
-    # (feature, flagship CD-MCTS, CMAZ, wreath equivariant, prior art)
-    ("Tier",
-     "flagship",
-     "workshop",
-     "workshop",
-     "-"),
-    ("Novelty",
-     "Plackett-Luce + coalition + EXP-IX (4-pillar combo)",
+    # (feature, CD-MCTS, CMAZ, wreath equivariant, prior art)
+    ("Main idea",
+     "Plackett-Luce + coalition + EXP-IX",
      "QMIX-style mixer in MCTS",
-     "Wreath C6 ⋊ S_N for star-hex games",
+     "Wreath C6 ≀ S_N for star-hex games",
      "-"),
     ("Value head",
      "vector PL theta + coalition + scalar",
@@ -50,7 +45,7 @@ COMPARISON_TABLE = [
      "-",
      "C6 spatial × S_N seat (wreath)",
      "HexaConv: p6m; FGNN: D2"),
-    ("Killer demonstration",
+    ("Key experiment",
      "kingmaker H2H + CCE-gap",
      "inference-override sweep",
      "bit-identical seat permutation",
@@ -60,13 +55,8 @@ COMPARISON_TABLE = [
      "kingmaker, halma, real CC",
      "real CC (with hex symmetry)",
      "-"),
-    ("Honest novelty %",
-     "80% (3 verification rounds)",
-     "85% (workshop-tier)",
-     "85% (workshop-tier)",
-     "-"),
-    ("Theorem",
-     "CCE convergence (Lemma 3 conjectural)",
+    ("Theory",
+     "CCE convergence (conjecture)",
      "-",
      "-",
      "-"),
@@ -74,7 +64,7 @@ COMPARISON_TABLE = [
 
 
 def render_markdown() -> str:
-    headers = ["Feature", "CD-MCTS (flagship)", "CMAZ", "Wreath equivariant", "Prior art"]
+    headers = ["Feature", "CD-MCTS", "CMAZ", "Wreath equivariant", "Prior art"]
     lines = []
     lines.append("| " + " | ".join(headers) + " |")
     lines.append("|" + "|".join(["---"] * len(headers)) + "|")

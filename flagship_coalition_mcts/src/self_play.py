@@ -27,8 +27,8 @@ For each state s in a trajectory, with current player p:
     final_rank(q) < final_rank(p)
   i.e., the opponents who finished AHEAD of p are treated as the
   "coalition that suppressed p". This is one of several reasonable
-  operationalisations; we pre-register it as the default and ablate
-  alternatives in the paper.
+  operationalisations; it is fixed in advance as the default, and
+  alternatives are left for ablation.
 """
 
 from __future__ import annotations

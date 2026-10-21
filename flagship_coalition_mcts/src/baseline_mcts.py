@@ -1,6 +1,6 @@
 """Scalar-PUCT baseline: Multiplayer AlphaZero (Petosa & Balch 2019 style).
 
-This is ablation **A0** in the paper. It uses:
+This is ablation **A0** in the ablation ladder. It uses:
 
   * The same encoder + policy head + scalar value head as CD-MCTS.
   * NO Plackett-Luce head, NO coalition head.
@@ -8,7 +8,7 @@ This is ablation **A0** in the paper. It uses:
   * Scalar value backup (not vector placement-marginal).
 
 The point is to provide a head-to-head comparison where the only
-difference is the *MCTS-side novelty*. Encoder + policy + scalar value
+difference is the *MCTS-side change*. Encoder + policy + scalar value
 are kept architecturally identical so any performance gap is
 attributable to the new MCTS components, not to a fairer architecture.
 
