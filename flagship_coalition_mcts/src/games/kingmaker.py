@@ -3,12 +3,11 @@
 Why this game exists
 ====================
 
-Reviewers will attack the paper with: "Your method has fancy coalition
-machinery, but in your real games (Chinese Checkers, Halma) coalitions
-might not actually matter - show me a game where coalitions provably
-matter and your method exploits them."
+In Chinese Checkers and Halma it is hard to tell whether coalitions
+matter at all, so a coalition-aware method needs a testbed where they
+provably do.
 
-This game is the answer. It is small enough to be solved exhaustively
+This game is that testbed. It is small enough to be solved exhaustively
 (depth-5 game tree ≈ 4^5 = 1024 leaves before pruning), deterministic,
 and the optimal play for the player-1 / player-2 coalition vs player 0
 is **provably different** from any maxn / paranoid / single-player-best-

@@ -2,8 +2,7 @@
 
 Wraps the existing nexus `core.game_env.GameEnv` as a CD-MCTS-compatible
 game with the duck-typed interface expected by `mcts.py`. This is the
-real bridge from the flagship research code to the user's actual
-tournament game.
+bridge from the CD-MCTS research code to the tournament game.
 
 Design notes
 ------------
@@ -14,7 +13,7 @@ Design notes
 2. Action space: CC has 1210 actions (10 pieces × 121 cells). MCTS uses
    the legal-mask to restrict.
 3. Feature encoding: GameEnv.get_state_tensor returns a torch tensor
-   of shape (num_channels, 17, 17). The flagship's MLP encoder won't
+   of shape (num_channels, 17, 17). The CD-MCTS MLP encoder won't
    handle this; we provide `cc_state_to_features` that flattens to a
    1D ndarray for compatibility with the existing MLP encoder, AND a
    `cc_state_to_2d_features` for use with a CNN encoder.
@@ -84,7 +83,7 @@ def make_cc_env(num_players: int, seed: Optional[int] = None) -> "GameEnv":
 def cc_state_to_features_flat(state: "GameEnv") -> np.ndarray:
     """Flatten the (C, 17, 17) state tensor to 1D ndarray.
 
-    For use with the flagship's MLPEncoder. Larger games will want a
+    For use with the CD-MCTS MLPEncoder. Larger games will want a
     CNN - see `cc_state_to_features_2d`.
     """
     p = state.current_player
